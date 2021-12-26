@@ -22,6 +22,5 @@
 #define SYS_close 21
 #define SYS_getProcCount 22
 #define SYS_getReadCount 23
-#define SYS_threadCreate 24
-#define SYS_clone 25
-#define SYS_join 26
+#define SYS_clone 24
+#define SYS_join 25

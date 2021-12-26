@@ -125,9 +125,6 @@ int getReadCount(void);
 int clone(void *);
 int join(void);
 
-// threads.c
-int threadCreate(void (*fn)(void *), void *arg);
-
 // swtch.S
 void swtch(struct context **, struct context *);
 

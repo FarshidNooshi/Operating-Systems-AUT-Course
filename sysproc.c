@@ -94,24 +94,6 @@ int sys_getReadCount(void)
   return getReadCount();
 }
 
-int sys_threadCreate(void)
-{
-  void *arg;
-  void (*function)(void *);
-
-  if (argptr(0, (void *)&function, sizeof(function)) == -1)
-  {
-    cprintf("Error in function");
-    return -1;
-  }
-
-  if (argptr(1, (void *)&arg, sizeof(arg)) == -1)
-  {
-    cprintf("Error in arg(s)");
-    return -1;
-  }
-  return threadCreate(function, arg);
-}
 
 int sys_clone(void)
 {

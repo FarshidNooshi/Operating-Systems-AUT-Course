@@ -7,9 +7,9 @@ int x = 0;
 
 int main(int argc, char *argv[])
 {
-    // printf(1, "stack is at %p\n", stack);
-    int tid = fork();
-    // int tid = clone(stack);
+    printf(1, "stack is at %p\n", stack);
+    // int tid = fork();
+    int tid = clone(stack);
     if (tid < 0)
     {
         printf(2, "error\n");

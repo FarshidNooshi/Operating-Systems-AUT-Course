@@ -25,7 +25,6 @@ int sleep(int);
 int uptime(void);
 int getProcCount(void);
 int getReadCount(void);
-int threadCreate(void (*fn)(void *), void *arg);
 int clone(void *);
 int join(void);
 
@@ -42,3 +41,4 @@ void *memset(void *, int, uint);
 void *malloc(uint);
 void free(void *);
 int atoi(const char *);
+int threadCreate(void (*fn)(void *), void *arg);

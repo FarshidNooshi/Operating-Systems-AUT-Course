@@ -340,6 +340,18 @@ void exit(void)
   panic("zombie exit");
 }
 
+
+int check_pgdir_share(struct proc *process)
+{
+  struct proc *p;
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if (p != process && p->pgdir == process->pgdir)
+      return 0;
+  }
+  return 1;
+}
+
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 int wait(void)
@@ -347,7 +359,6 @@ int wait(void)
   struct proc *p;
   int havekids, pid;
   struct proc *curproc = myproc();
-
   acquire(&ptable.lock);
   for (;;)
   {
@@ -641,7 +652,7 @@ int clone(void *stack)
   // np is the new process
   struct proc *np;
   //  allocate process
-  if ((np = allocoroc()) == 0)
+  if ((np = allocproc()) == 0)
     return -1;
   curproc->threads++;
   np->stackTop = (int)((char *)stack + PGSIZE);
@@ -718,16 +729,6 @@ int join(void)
       release(&ptable.lock);
       return -1;
     }
+    sleep(curproc, &ptable.lock);
   }
-}
-
-int check_pgdir_share(struct proc *process)
-{
-  struct proc *p;
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-  {
-    if (p != process && p->pgdir == process->pgdir)
-      return 0;
-  }
-  return 1;
 }
