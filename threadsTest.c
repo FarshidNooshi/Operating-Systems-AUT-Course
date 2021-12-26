@@ -10,7 +10,7 @@ void childPrint(void *args)
 int main(void)
 {
     int argument = 0xFA1; // 4001 in decimal
-    int thread_id = thread_create(&childPrint, (void *)&argument);
+    int thread_id = threadCreate(&childPrint, (void *)&argument);
     if (thread_id < 0)
         printf(1, "thread_create failed!\n");
     join();

@@ -4,7 +4,7 @@
 
 #define PAGESIZE 4096
 
-int thread_create(void (*fn)(void *), void *arg)
+int threadCreate(void (*fn)(void *), void *arg)
 {
     // allocating 2 * pageSize for fptr in heap
     void *fptr = malloc(2 * (PAGESIZE));
