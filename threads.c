@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     int tid = clone(stack);
     if (tid < 0)
     {
-        printf(2, "error\n");
+        printf(2, "error while cloning or forking\n");
     }
     else if (tid == 0)
     {

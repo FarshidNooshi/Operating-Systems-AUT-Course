@@ -385,8 +385,8 @@ int wait(void)
         p->killed = 0;
         p->state = UNUSED;
         p->stackTop = -1;
-        p->pgdir = 0;
         p->threads = -1;
+        p->pgdir = 0;
         release(&ptable.lock);
         return pid;
       }
@@ -647,19 +647,15 @@ int getReadCount(void)
 int clone(void *stack)
 {
   int pid;
-  // curroc is the current process
   struct proc *curproc = myproc();
-  // np is the new process
   struct proc *np;
-  //  allocate process
   if ((np = allocproc()) == 0)
     return -1;
-  curproc->threads++;
   np->stackTop = (int)((char *)stack + PGSIZE);
-  // might be at the middle of changing address space in another thread
+  curproc->threads++;
   acquire(&ptable.lock);
-  np->pgdir = curproc->pgdir;
   np->sz = curproc->sz;
+  np->pgdir = curproc->pgdir;
   release(&ptable.lock);
 
   int bytesOnStack = curproc->stackTop - curproc->tf->esp;
@@ -669,9 +665,9 @@ int clone(void *stack)
   np->parent = curproc;
 
   *np->tf = *curproc->tf;
-  np->tf->eax = 0;
   np->tf->esp = np->stackTop - bytesOnStack;
   np->tf->ebp = np->stackTop - (curproc->stackTop - curproc->tf->ebp);
+  np->tf->eax = 0;
   int i;
   for (i = 0; i < NOFILE; i++)
     if (curproc->ofile[i])
@@ -689,29 +685,24 @@ int clone(void *stack)
 int join(void)
 {
   struct proc *p;
-  int haveKids, pid;
+  int temp, pid;
   struct proc *curproc = myproc();
   acquire(&ptable.lock);
   for (;;)
   {
-    haveKids = 0;
+    temp = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     {
-      if (p->parent != curproc)
+      if (p->parent != curproc || p->threads != -1)
         continue;
-      if (p->threads != -1)
-        continue;
-      haveKids = 1;
+      temp = 1;
       if (p->state == ZOMBIE)
       {
-        // found one
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
         if (check_pgdir_share(p))
-        {
           freevm(p->pgdir);
-        }
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
@@ -724,7 +715,7 @@ int join(void)
         return pid;
       }
     }
-    if (!haveKids || curproc->killed)
+    if (!temp || curproc->killed)
     {
       release(&ptable.lock);
       return -1;

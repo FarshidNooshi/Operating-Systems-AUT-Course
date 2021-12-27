@@ -4,7 +4,7 @@
 
 void childPrint(void *args)
 {
-    printf(1, "hi, childs function executed properly with argument: %d\n", *(int *)args);
+    printf(1, "childs function executed properly with args: %d\n", *(int *)args);
 }
 
 int main(void)
@@ -16,6 +16,5 @@ int main(void)
         printf(1, "thread_create failed!\n");
     join();
     printf(1, "thread_id is : %d\n", thread_id);
-
     exit();
 }

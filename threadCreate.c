@@ -6,21 +6,20 @@
 
 int threadCreate(void (*fn)(void *), void *arg)
 {
-    void *fptr = malloc(2 * (PAGESIZE));
+    void *pointer = malloc(2 * (PAGESIZE));
     void *stack;
-    if (fptr == 0)
+    if (pointer == 0)
         return -1;
-    int mod = (uint)fptr % PAGESIZE;
+    int mod = (uint)pointer % PAGESIZE;
     if (mod == 0)
-        stack = fptr;
+        stack = pointer;
     else
-        stack = fptr + (PAGESIZE - mod);
+        stack = pointer + (PAGESIZE - mod);
     int thread_id = clone((void *)stack);
-    // clone failed
     if (thread_id < 0) 
         printf(1, "clone failed\n");
     else if (thread_id == 0)
-    { // child
+    {
         (fn)(arg);
         free(stack);
         exit();
