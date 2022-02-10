@@ -51,6 +51,7 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
+      updateProcTimes();
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -103,8 +104,22 @@ trap(struct trapframe *tf)
   // Force process to give up CPU on clock tick.
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING &&
-     tf->trapno == T_IRQ0+IRQ_TIMER)
-    yield();
+    tf->trapno == T_IRQ0+IRQ_TIMER) {
+    switch (policy) {
+      case DEFAULT:
+      case PRIORITY:
+        yield();
+        break;
+      case ROUND_ROBIN:
+        if (ticks % QUANTUM == 0)
+          yield();
+        break;
+      default:
+        if ((ticks % (7 - myproc()->priority) * 4 * QUANTUM) == 0)
+          yield();
+        break;
+    }
+  }
 
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)

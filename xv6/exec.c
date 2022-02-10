@@ -19,6 +19,11 @@ exec(char *path, char **argv)
   pde_t *pgdir, *oldpgdir;
   struct proc *curproc = myproc();
 
+  //  the calling process' priority must reset 
+  // to the default value
+  if (policy == DYNAMIC_MULTI_LAYERED_PRIORITY)
+    curproc->priority = 3;
+
   begin_op();
 
   if((ip = namei(path)) == 0){
@@ -68,6 +73,8 @@ exec(char *path, char **argv)
   clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
   sp = sz;
 
+  curproc->stackTop = sp;
+
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
     if(argc >= MAXARG)
@@ -99,7 +106,7 @@ exec(char *path, char **argv)
   curproc->sz = sz;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
-  curproc->stackTop = sp;//edited
+  
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;
