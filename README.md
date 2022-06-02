@@ -1,3 +1,3 @@
 # Operating-Systems-AUT-Course
 
-TODO: LAB & XV6
+this repository contains my lab and project codes for the Operating Systems course at Amirkabir University of Technology
